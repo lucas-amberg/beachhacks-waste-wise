@@ -11,9 +11,7 @@ export function Footer() {
           <div className="w-6 h-6 bg-gradient-to-br from-primary to-teal rounded-md flex items-center justify-center">
             <Leaf className="w-3.5 h-3.5 text-white" />
           </div>
-          <span>
-            WasteWise &mdash; Built for BeachHacks 2026
-          </span>
+          <span>WasteWise</span>
         </Link>
         <p className="text-xs text-muted-foreground">
           Reducing carbon footprint, one receipt at a time.

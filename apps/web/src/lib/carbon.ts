@@ -52,7 +52,7 @@ export async function estimateCarbon(
     },
   });
 
-  const content = response.text?.trim() ?? "{}";
+  const content = response.text?.trim() || "{}";
   const parsed = JSON.parse(content);
 
   if (!parsed.items || !Array.isArray(parsed.items)) {
