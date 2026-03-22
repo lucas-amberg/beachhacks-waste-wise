@@ -1,4 +1,61 @@
 import { NextRequest, NextResponse } from "next/server";
+import { GoogleGenAI } from "@google/genai";
+
+const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
+
+const WASTE_CLASSIFICATION_PROMPT = `You are an expert waste classification assistant. Analyze this image of a waste item and classify it into one of three categories: "recycle", "compost", or "landfill".
+
+Return ONLY a JSON object with these fields:
+- "category": one of "recycle", "compost", or "landfill"
+- "confidence": a number between 0.0 and 1.0 representing your confidence
+- "instructions": a concise 1-2 sentence disposal instruction for this specific item
+
+Examples:
+{"category":"recycle","confidence":0.92,"instructions":"Rinse the bottle and replace the cap before placing in your recycling bin. Most curbside programs accept #1 PET bottles."}
+{"category":"compost","confidence":0.88,"instructions":"Place banana peels in your compost bin. They break down quickly and add potassium to the soil."}
+{"category":"landfill","confidence":0.85,"instructions":"Styrofoam cannot be recycled in most areas. Place in general waste and consider reusable containers next time."}`;
+
+async function classifyWasteImage(
+  imageDataUrl: string
+): Promise<{ category: "recycle" | "compost" | "landfill"; confidence: number; instructions: string } | null> {
+  const match = imageDataUrl.match(/^data:(.+?);base64,(.+)$/);
+  if (!match) return null;
+  const [, mimeType, base64Data] = match;
+
+  const response = await ai.models.generateContent({
+    model: "gemini-2.5-flash",
+    contents: [
+      {
+        role: "user",
+        parts: [
+          { text: WASTE_CLASSIFICATION_PROMPT },
+          { inlineData: { mimeType, data: base64Data } },
+        ],
+      },
+    ],
+    config: {
+      maxOutputTokens: 500,
+    },
+  });
+
+  const content = response.text?.trim() ?? "";
+  const jsonMatch = content.match(/\{[\s\S]*\}/);
+  if (!jsonMatch) return null;
+
+  try {
+    const parsed = JSON.parse(jsonMatch[0]);
+    const category = ["recycle", "compost", "landfill"].includes(parsed.category)
+      ? parsed.category
+      : "landfill";
+    return {
+      category,
+      confidence: Math.min(1, Math.max(0, Number(parsed.confidence) || 0.8)),
+      instructions: typeof parsed.instructions === "string" ? parsed.instructions : "Place in general waste when unsure.",
+    };
+  } catch {
+    return null;
+  }
+}
 
 const WASTE_CATEGORIES: Record<
   string,
@@ -79,12 +136,28 @@ const WASTE_CATEGORIES: Record<
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    const { description } = body as { description?: string };
+    const { description, image } = body as { description?: string; image?: string };
 
-    // Simulate processing time for demo effect
+    // Image-based classification via Gemini
+    if (image && typeof image === "string") {
+      const result = await classifyWasteImage(image);
+      if (!result) {
+        return NextResponse.json(
+          { error: "Could not classify the waste item from this image. Try a clearer photo or describe the item instead." },
+          { status: 400 }
+        );
+      }
+      return NextResponse.json({
+        id: crypto.randomUUID(),
+        category: result.category,
+        confidence: parseFloat(result.confidence.toFixed(2)),
+        instructions: result.instructions,
+      });
+    }
+
+    // Text-based fallback using keyword matching
     await new Promise((resolve) => setTimeout(resolve, 1500));
 
-    // Mock classification based on description keywords
     let category: "recycle" | "compost" | "landfill" = "landfill";
     let confidence = 0.72;
     let instructions =
@@ -108,7 +181,8 @@ export async function POST(request: NextRequest) {
       confidence: parseFloat(confidence.toFixed(2)),
       instructions,
     });
-  } catch {
+  } catch (err) {
+    console.error("Waste classification error:", err);
     return NextResponse.json(
       { error: "Failed to classify waste" },
       { status: 500 }

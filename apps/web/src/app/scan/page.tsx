@@ -120,16 +120,20 @@ export default function ScanPage() {
     }
   };
 
-  const handleWasteSubmit = async () => {
-    if (!wasteDescription.trim()) return;
+  const handleWasteSubmit = async (image?: string) => {
+    if (!image && !wasteDescription.trim()) return;
 
     setError(null);
     setLoading(true);
     try {
+      const payload = image
+        ? { image }
+        : { description: wasteDescription };
+
       const res = await fetch("/api/scan-waste", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ description: wasteDescription }),
+        body: JSON.stringify(payload),
       });
       const data = await res.json();
       if (!res.ok) {
@@ -356,9 +360,16 @@ export default function ScanPage() {
                 accept="image/*"
                 capture="environment"
                 className="hidden"
-                onChange={(e) => {
+                onChange={async (e) => {
                   const file = e.target.files?.[0];
-                  if (file) readImageAsDataUrl(file, setWasteImage);
+                  if (!file) return;
+                  const reader = new FileReader();
+                  reader.onload = async () => {
+                    const resized = await resizeImage(reader.result as string);
+                    setWasteImage(resized);
+                    handleWasteSubmit(resized);
+                  };
+                  reader.readAsDataURL(file);
                 }}
               />
               {wasteImage ? (
@@ -417,8 +428,8 @@ export default function ScanPage() {
           />
           <Button
             className="w-full cursor-pointer shadow-md shadow-primary/20"
-            onClick={handleWasteSubmit}
-            disabled={loading || !wasteDescription.trim()}
+            onClick={() => handleWasteSubmit(wasteImage ?? undefined)}
+            disabled={loading || (!wasteDescription.trim() && !wasteImage)}
           >
             <Recycle className="w-4 h-4 mr-2" />
             {loading ? "Classifying..." : "Classify Waste"}
