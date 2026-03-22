@@ -1,8 +1,8 @@
 import { ReceiptItem } from "./types";
-import OpenAI from "openai";
+import { GoogleGenAI } from "@google/genai";
 
 // ---------------------------------------------------------------------------
-// LLM-based carbon estimation (GPT-4o-mini)
+// LLM-based carbon estimation (Gemini 2.5 Flash)
 // ---------------------------------------------------------------------------
 
 const CARBON_ESTIMATION_PROMPT = `You are a carbon footprint estimation engine for grocery items.
@@ -31,7 +31,7 @@ Return a JSON object with a single key "items" containing an array of objects, e
 export async function estimateCarbon(
   items: { name: string; quantity: number; weight_info?: string }[]
 ): Promise<ReceiptItem[]> {
-  const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
+  const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
 
   const userMessage = JSON.stringify(
     items.map((i) => ({
@@ -41,18 +41,18 @@ export async function estimateCarbon(
     }))
   );
 
-  const response = await openai.chat.completions.create({
-    model: "gpt-4o-mini",
-    messages: [
-      { role: "system", content: CARBON_ESTIMATION_PROMPT },
-      { role: "user", content: userMessage },
-    ],
-    response_format: { type: "json_object" },
-    temperature: 0,
-    max_tokens: 2000,
+  const response = await ai.models.generateContent({
+    model: "gemini-2.5-flash",
+    contents: userMessage,
+    config: {
+      systemInstruction: CARBON_ESTIMATION_PROMPT,
+      responseMimeType: "application/json",
+      temperature: 0,
+      maxOutputTokens: 2000,
+    },
   });
 
-  const content = response.choices[0]?.message?.content?.trim() ?? "{}";
+  const content = response.text?.trim() ?? "{}";
   const parsed = JSON.parse(content);
 
   if (!parsed.items || !Array.isArray(parsed.items)) {
