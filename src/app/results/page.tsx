@@ -26,7 +26,6 @@ export default function ResultsPage() {
   const [receiptResult, setReceiptResult] = useState<ReceiptResult | null>(null);
   const [wasteResult, setWasteResult] = useState<WasteScanResult | null>(null);
   const [offsetResult, setOffsetResult] = useState<OffsetResult | null>(null);
-  const [offsetting, setOffsetting] = useState(false);
 
   useEffect(() => {
     const type = sessionStorage.getItem("scanType") as "receipt" | "waste";
@@ -38,24 +37,19 @@ export default function ResultsPage() {
     }
   }, []);
 
-  const handleOffset = async (carbonKg: number) => {
-    setOffsetting(true);
-    try {
-      const res = await fetch("/api/offset", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ carbon_kg: carbonKg }),
-      });
-      const data = await res.json();
-      if (data.success) {
-        saveOffset({ carbon_offset_kg: data.carbon_offset_kg, cost_usd: data.cost_usd });
-      }
-      setOffsetResult(data);
-    } catch (err) {
-      console.error("Offset failed:", err);
-    } finally {
-      setOffsetting(false);
-    }
+  const handleOffset = (carbonKg: number) => {
+    const costUsd = parseFloat((carbonKg * 0.1).toFixed(2));
+    window.open(
+      `https://www.every.org/cleanaircatf?amount=${costUsd}#donate`,
+      "_blank",
+      "noopener,noreferrer"
+    );
+    saveOffset({ carbon_offset_kg: carbonKg, cost_usd: costUsd });
+    setOffsetResult({
+      carbon_offset_kg: carbonKg,
+      cost_usd: costUsd,
+      success: true,
+    });
   };
 
   if (!scanType) {
@@ -78,7 +72,6 @@ export default function ResultsPage() {
       <ReceiptResults
         result={receiptResult}
         offsetResult={offsetResult}
-        offsetting={offsetting}
         onOffset={handleOffset}
       />
     );
@@ -170,12 +163,10 @@ function WasteResults({ result }: { result: WasteScanResult }) {
 function ReceiptResults({
   result,
   offsetResult,
-  offsetting,
   onOffset,
 }: {
   result: ReceiptResult;
   offsetResult: OffsetResult | null;
-  offsetting: boolean;
   onOffset: (kg: number) => void;
 }) {
   const maxCarbon = Math.max(...result.items.map((i) => i.estimated_carbon_kg));
@@ -296,16 +287,13 @@ function ReceiptResults({
       {!offsetResult ? (
         <Button
           onClick={() => onOffset(result.total_carbon_kg)}
-          disabled={offsetting}
           className="w-full cursor-pointer py-6 text-base shadow-lg shadow-primary/25 animate-pulse-green"
           size="lg"
         >
           <Heart className="w-5 h-5 mr-2" />
-          {offsetting
-            ? "Processing..."
-            : `Offset ${result.total_carbon_kg} kg CO2 for $${(
-                result.total_carbon_kg * 0.1
-              ).toFixed(2)}`}
+          Offset {result.total_carbon_kg} kg CO2 for ${(
+            result.total_carbon_kg * 0.1
+          ).toFixed(2)}
         </Button>
       ) : (
         <Card className="border-primary/30 bg-primary/5 text-center">

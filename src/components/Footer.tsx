@@ -12,7 +12,7 @@ export function Footer() {
             <Leaf className="w-3.5 h-3.5 text-white" />
           </div>
           <span>
-            WasteWise AI+ &mdash; Built for BeachHacks 2026
+            WasteWise &mdash; Built for BeachHacks 2026
           </span>
         </Link>
         <p className="text-xs text-muted-foreground">

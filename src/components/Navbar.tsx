@@ -32,8 +32,7 @@ export function Navbar() {
             <Leaf className="w-5 h-5 text-white" />
           </div>
           <span className="text-forest">
-            Waste<span className="text-primary">Wise</span>{" "}
-            <span className="text-ocean text-sm font-semibold">AI+</span>
+            Waste<span className="text-primary">Wise</span>
           </span>
         </Link>
 
@@ -77,7 +76,7 @@ export function Navbar() {
                 <div className="w-8 h-8 bg-gradient-to-br from-primary to-teal rounded-lg flex items-center justify-center">
                   <Leaf className="w-4 h-4 text-white" />
                 </div>
-                WasteWise AI+
+                WasteWise
               </SheetTitle>
             </SheetHeader>
             <div className="flex flex-col gap-1 mt-6">
