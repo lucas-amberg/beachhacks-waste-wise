@@ -22,6 +22,10 @@ build/
 .env*.local
 !.env.example
 
+# python
+.venv/
+__pycache__/
+
 # misc
 .DS_Store
 *.pem

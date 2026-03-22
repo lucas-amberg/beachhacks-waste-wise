@@ -15,9 +15,9 @@ export interface AgentverseConfig {
 }
 
 const DEFAULT_CONFIG: AgentverseConfig = {
-  scoringAgentUrl: '',
+  scoringAgentUrl: 'http://localhost:8000/score',
   apiKey: '',
-  enabled: false,
+  enabled: true,
 }
 
 export interface AgentScoreResult {
