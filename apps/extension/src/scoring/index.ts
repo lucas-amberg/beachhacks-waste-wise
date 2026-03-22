@@ -3,8 +3,8 @@ import type { DetectedProduct, ProductScore, ScoreFactor, CartScore, AnalyzedPro
 // ── Grade / Color ──
 
 export function getGrade(score: number): { grade: string; color: string } {
-  if (score >= 80) return { grade: 'A', color: '#3b82f6' }
-  if (score >= 60) return { grade: 'B', color: '#60a5fa' }
+  if (score >= 80) return { grade: 'A', color: '#059669' }
+  if (score >= 60) return { grade: 'B', color: '#10B981' }
   if (score >= 40) return { grade: 'C', color: '#f87171' }
   if (score >= 20) return { grade: 'D', color: '#ef4444' }
   return { grade: 'F', color: '#dc2626' }

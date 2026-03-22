@@ -39,19 +39,19 @@ export function App() {
   const analysis = loading ? null : data as PageAnalysis | null
 
   return (
-    <div className="min-h-screen bg-[#0a0d14] text-white p-4 space-y-5">
+    <div className="min-h-screen bg-[#064E3B] text-white p-4 space-y-5">
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-lg font-bold">
-            <span className="text-[#3b82f6]">Waste</span>Wise
+            <span className="text-[#059669]">Waste</span>Wise
           </h1>
           <p className="text-xs text-gray-500">Sustainability Dashboard</p>
         </div>
         <button
           onClick={handleRescan}
           disabled={loading}
-          className="px-3 py-1.5 rounded-lg bg-[#3b82f6]/10 text-[#3b82f6] text-xs font-semibold hover:bg-[#3b82f6]/20 transition-colors disabled:opacity-40"
+          className="px-3 py-1.5 rounded-lg bg-[#059669]/10 text-[#059669] text-xs font-semibold hover:bg-[#059669]/20 transition-colors disabled:opacity-40"
         >
           {loading ? 'Scanning...' : 'Rescan Page'}
         </button>
@@ -67,7 +67,7 @@ export function App() {
         <>
           {/* Page type badge */}
           <div className="flex items-center gap-2">
-            <span className="px-2 py-0.5 rounded-full bg-[#1e293b] text-gray-400 text-xs font-medium capitalize">
+            <span className="px-2 py-0.5 rounded-full bg-[#047857] text-gray-400 text-xs font-medium capitalize">
               {analysis.pageType} page
             </span>
             <span className="text-xs text-gray-600 truncate">{new URL(analysis.url).hostname}</span>
@@ -101,22 +101,22 @@ function LoadingIndicator({ productCount }: { productCount: number }) {
     <div className="text-center py-16 space-y-5">
       {/* Spinner */}
       <div className="flex justify-center">
-        <div className="w-10 h-10 rounded-full border-[3px] border-[#1e293b] border-t-[#3b82f6] animate-spin" />
+        <div className="w-10 h-10 rounded-full border-[3px] border-[#047857] border-t-[#059669] animate-spin" />
       </div>
       <div className="space-y-1.5">
         <p className="text-white text-sm font-medium">Analyzing {productCount} product{productCount !== 1 ? 's' : ''}...</p>
-        <p className="text-gray-500 text-xs">Gemini AI is scoring sustainability</p>
+        <p className="text-gray-500 text-xs">Fetch AI is scoring sustainability</p>
       </div>
       {/* Skeleton cards */}
       <div className="space-y-2 max-w-[280px] mx-auto">
         {Array.from({ length: Math.min(productCount, 4) }).map((_, i) => (
-          <div key={i} className="bg-[#111827] border border-[#1e293b] rounded-xl p-3 flex items-center gap-3 animate-pulse" style={{ animationDelay: `${i * 150}ms` }}>
-            <div className="w-9 h-9 rounded-lg bg-[#1e293b]" />
+          <div key={i} className="bg-[#065F46] border border-[#047857] rounded-xl p-3 flex items-center gap-3 animate-pulse" style={{ animationDelay: `${i * 150}ms` }}>
+            <div className="w-9 h-9 rounded-lg bg-[#047857]" />
             <div className="flex-1 space-y-1.5">
-              <div className="h-3 bg-[#1e293b] rounded w-3/4" />
-              <div className="h-2 bg-[#1e293b] rounded w-1/2" />
+              <div className="h-3 bg-[#047857] rounded w-3/4" />
+              <div className="h-2 bg-[#047857] rounded w-1/2" />
             </div>
-            <div className="w-8 h-8 rounded-full bg-[#1e293b]" />
+            <div className="w-8 h-8 rounded-full bg-[#047857]" />
           </div>
         ))}
       </div>
@@ -144,16 +144,16 @@ function SummaryBar({ analysis }: { analysis: PageAnalysis }) {
   const { summary } = analysis
   return (
     <div className="grid grid-cols-3 gap-2">
-      <div className="bg-[#111827] border border-[#1e293b] rounded-lg p-3 text-center">
+      <div className="bg-[#065F46] border border-[#047857] rounded-lg p-3 text-center">
         <p className="text-lg font-bold text-white">{summary.totalProducts}</p>
         <p className="text-xs text-gray-500">Products</p>
       </div>
-      <div className="bg-[#111827] border border-[#1e293b] rounded-lg p-3 text-center">
-        <p className="text-lg font-bold text-[#3b82f6]">{summary.swapsAvailable}</p>
+      <div className="bg-[#065F46] border border-[#047857] rounded-lg p-3 text-center">
+        <p className="text-lg font-bold text-[#059669]">{summary.swapsAvailable}</p>
         <p className="text-xs text-gray-500">Swaps Found</p>
       </div>
-      <div className="bg-[#111827] border border-[#1e293b] rounded-lg p-3 text-center">
-        <p className="text-lg font-bold text-[#3b82f6]">+{summary.potentialImprovement}</p>
+      <div className="bg-[#065F46] border border-[#047857] rounded-lg p-3 text-center">
+        <p className="text-lg font-bold text-[#059669]">+{summary.potentialImprovement}</p>
         <p className="text-xs text-gray-500">Potential</p>
       </div>
     </div>
@@ -165,7 +165,7 @@ function ProductCard({ product }: { product: AnalyzedProduct }) {
   const [expanded, setExpanded] = useState(false)
 
   return (
-    <div className="bg-[#111827] border border-[#1e293b] rounded-xl overflow-hidden">
+    <div className="bg-[#065F46] border border-[#047857] rounded-xl overflow-hidden">
       {/* Product header */}
       <button
         onClick={() => setExpanded(!expanded)}
@@ -175,7 +175,7 @@ function ProductCard({ product }: { product: AnalyzedProduct }) {
           <img
             src={detected.imageUrl}
             alt=""
-            className="w-11 h-11 rounded-lg object-cover bg-[#1e293b] shrink-0"
+            className="w-11 h-11 rounded-lg object-cover bg-[#047857] shrink-0"
           />
         )}
         <div className="flex-1 min-w-0">
@@ -192,12 +192,12 @@ function ProductCard({ product }: { product: AnalyzedProduct }) {
 
       {/* Expanded detail */}
       {expanded && (
-        <div className="px-3 pb-3 space-y-3 border-t border-[#1e293b]">
+        <div className="px-3 pb-3 space-y-3 border-t border-[#047857]">
           {/* Score explanation */}
           <div className="mt-3 p-2.5 rounded-lg bg-white/[0.02]">
             <p className="text-gray-400 text-xs leading-relaxed">{score.explanation}</p>
             <span className={`inline-block mt-1 text-[10px] px-1.5 py-0.5 rounded font-semibold ${
-              detected.confidence === 'high' ? 'bg-[#3b82f6]/15 text-[#60a5fa]' :
+              detected.confidence === 'high' ? 'bg-[#059669]/15 text-[#34D399]' :
               detected.confidence === 'medium' ? 'bg-yellow-500/15 text-yellow-400' :
               'bg-red-500/15 text-red-400'
             }`}>
@@ -211,9 +211,9 @@ function ProductCard({ product }: { product: AnalyzedProduct }) {
             <div className="space-y-1">
               {score.factors.slice(0, 4).map((f, i) => (
                 <div key={i} className="flex items-center gap-2 text-xs">
-                  <span className={`w-1.5 h-1.5 rounded-full shrink-0 ${f.impact > 0 ? 'bg-[#3b82f6]' : 'bg-red-400'}`} />
+                  <span className={`w-1.5 h-1.5 rounded-full shrink-0 ${f.impact > 0 ? 'bg-[#059669]' : 'bg-red-400'}`} />
                   <span className="text-gray-400">{f.detail}</span>
-                  <span className={`ml-auto font-semibold ${f.impact > 0 ? 'text-[#3b82f6]' : 'text-red-400'}`}>
+                  <span className={`ml-auto font-semibold ${f.impact > 0 ? 'text-[#059669]' : 'text-red-400'}`}>
                     {f.impact > 0 ? '+' : ''}{f.impact}
                   </span>
                 </div>
@@ -235,15 +235,15 @@ function RecommendationCard({ rec }: { rec: Recommendation }) {
   const { alternative } = rec
 
   return (
-    <div className="p-3 rounded-lg bg-[#3b82f6]/[0.04] border border-[#3b82f6]/15">
-      <p className="text-[#3b82f6] text-[10px] font-bold uppercase tracking-wider mb-2">Better Alternative</p>
+    <div className="p-3 rounded-lg bg-[#059669]/[0.04] border border-[#059669]/15">
+      <p className="text-[#059669] text-[10px] font-bold uppercase tracking-wider mb-2">Better Alternative</p>
       <p className="text-white text-sm font-semibold">{alternative.name}</p>
       <p className="text-gray-400 text-xs mt-1 leading-relaxed">{alternative.reason}</p>
       <a
         href={alternative.searchUrl}
         target="_blank"
         rel="noopener noreferrer"
-        className="block mt-2 text-center py-1.5 rounded-lg bg-[#3b82f6]/12 text-[#3b82f6] text-xs font-semibold hover:bg-[#3b82f6]/22 transition-colors"
+        className="block mt-2 text-center py-1.5 rounded-lg bg-[#059669]/12 text-[#059669] text-xs font-semibold hover:bg-[#059669]/22 transition-colors"
       >
         Find on this site
       </a>
@@ -254,7 +254,7 @@ function RecommendationCard({ rec }: { rec: Recommendation }) {
 function SourceBadge({ source }: { source?: string }) {
   if (!source) return null
   const styles = {
-    agentverse: 'bg-[#3b82f6]/15 text-[#60a5fa]',
+    agentverse: 'bg-[#059669]/15 text-[#34D399]',
     gemini: 'bg-gray-500/15 text-gray-400',
     keyword: 'bg-yellow-500/15 text-yellow-400',
   }

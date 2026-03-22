@@ -1,6 +1,7 @@
 """Enhanced sustainability scoring with category-aware prompts and eco-database reconciliation."""
 
 import json
+import logging
 import os
 import google.generativeai as genai
 from eco_database import (
@@ -9,6 +10,8 @@ from eco_database import (
     get_category_baseline,
     CERTIFICATION_IMPACTS,
 )
+
+log = logging.getLogger("wastewise-agent")
 
 GEMINI_API_KEY = os.environ.get("GEMINI_API_KEY", "")
 
@@ -125,8 +128,15 @@ async def score_products(
     categories = [categorize_product(p["name"], p.get("brand")) for p in products]
     brand_data = [lookup_brand(p.get("brand")) for p in products]
 
+    for i, p in enumerate(products):
+        log.info(
+            "  Product %d: %s | category=%s | brand_match=%s",
+            i, p["name"], categories[i] or "unknown", bool(brand_data[i]),
+        )
+
     # Step 2: Build enhanced prompt
     prompt = _build_prompt(products, categories, brand_data, retailer)
+    log.info("Calling Gemini (gemini-2.5-flash) with %d-char prompt", len(prompt))
 
     # Step 3: Call Gemini
     model = genai.GenerativeModel("gemini-2.5-flash")
@@ -138,14 +148,17 @@ async def score_products(
         ),
     )
 
+    log.info("Gemini response received (%d chars)", len(response.text))
     raw_scores = json.loads(response.text)
 
     # Step 4: Reconcile with eco-database
     final_scores = []
     for i, score_data in enumerate(raw_scores):
+        raw = score_data.get("score", "?")
         score_data = _reconcile_score(score_data, categories[i], brand_data[i])
-        # Clamp
         score_data["score"] = max(5, min(98, round(score_data["score"])))
+        if raw != score_data["score"]:
+            log.info("  Product %d: Gemini=%s → reconciled=%d", i, raw, score_data["score"])
         final_scores.append(score_data)
 
     return final_scores

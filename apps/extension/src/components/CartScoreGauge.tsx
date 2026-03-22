@@ -21,7 +21,7 @@ export function CartScoreGauge({ cartScore }: Props) {
         <circle
           cx="60" cy="60" r="54"
           fill="none"
-          stroke="#1e293b"
+          stroke="#047857"
           strokeWidth="10"
         />
         <circle
