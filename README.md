@@ -1,10 +1,10 @@
-# Waste Wise - BeachHacks 8.0
+# Waste Wise - BeachHacks 9.0
 
 An AI-powered sustainability platform that helps consumers understand and reduce their environmental footprint through receipt scanning, waste classification, and real-time eco-scoring while shopping online.
 
 ## Authors
 
-Lucas Amberg, Edong Lee, and Jacob Paolinelli
+[Lucas Amberg](https://github.com/lucas-amberg), [Edong Lee](https://github.com/edogthelegend), and Jacob Paolinelli
 
 ## About the Project
 
