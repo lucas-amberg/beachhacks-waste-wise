@@ -2,6 +2,8 @@
 
 An AI-powered sustainability platform that helps consumers understand and reduce their environmental footprint through receipt scanning, waste classification, and real-time eco-scoring while shopping online.
 
+[Devpost Link](https://devpost.com/software/wastewise-exwqbd)
+
 ## Authors
 
 [Lucas Amberg](https://github.com/lucas-amberg), [Edong Lee](https://github.com/edogthelegend), and Jacob Paolinelli
