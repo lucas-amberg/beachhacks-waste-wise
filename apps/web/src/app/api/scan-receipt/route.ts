@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import OpenAI from "openai";
+import { GoogleGenAI } from "@google/genai";
 import {
   estimateCarbon,
   calculateReceipt,
@@ -8,20 +8,9 @@ import {
   generateSuggestions,
 } from "@/lib/carbon";
 
-const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
+const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
 
-async function extractItemsFromImage(
-  imageDataUrl: string
-): Promise<{ name: string; quantity: number; weight_info?: string }[]> {
-  const response = await openai.chat.completions.create({
-    model: "gpt-4o",
-    messages: [
-      {
-        role: "user",
-        content: [
-          {
-            type: "text",
-            text: `You are an expert grocery receipt scanner. Extract EVERY purchased item from this receipt image. Do NOT skip any items.
+const RECEIPT_EXTRACTION_PROMPT = `You are an expert grocery receipt scanner. Extract EVERY purchased item from this receipt image. Do NOT skip any items.
 
 IMPORTANT RULES:
 1. Extract ALL line items — including snacks, chips, cereals, beverages, sauces, condiments, and packaged goods. Every product the customer bought must appear.
@@ -34,19 +23,33 @@ IMPORTANT RULES:
 Return ONLY a JSON array. Example:
 [{"name":"reduced fat milk","quantity":1},{"name":"beef chuck stew meat","quantity":1,"weight_info":"1.99 lb"},{"name":"salmon fillet","quantity":1,"weight_info":"0.85 lb"},{"name":"potato chips","quantity":1}]
 
-If you cannot read the receipt, return [].`,
-          },
-          {
-            type: "image_url",
-            image_url: { url: imageDataUrl },
-          },
+If you cannot read the receipt, return [].`;
+
+async function extractItemsFromImage(
+  imageDataUrl: string
+): Promise<{ name: string; quantity: number; weight_info?: string }[]> {
+  // Parse the data URL to extract mimeType and base64 data
+  const match = imageDataUrl.match(/^data:(.+?);base64,(.+)$/);
+  if (!match) return [];
+  const [, mimeType, base64Data] = match;
+
+  const response = await ai.models.generateContent({
+    model: "gemini-2.5-flash",
+    contents: [
+      {
+        role: "user",
+        parts: [
+          { text: RECEIPT_EXTRACTION_PROMPT },
+          { inlineData: { mimeType, data: base64Data } },
         ],
       },
     ],
-    max_tokens: 2000,
+    config: {
+      maxOutputTokens: 2000,
+    },
   });
 
-  const content = response.choices[0]?.message?.content?.trim() ?? "[]";
+  const content = response.text?.trim() ?? "[]";
   const jsonMatch = content.match(/\[[\s\S]*\]/);
   if (!jsonMatch) return [];
 
