@@ -1,0 +1,20 @@
+@import "tailwindcss";
+
+@theme {
+  --color-blue-accent: #3b82f6;
+  --color-blue-dark: #2563eb;
+  --color-red-accent: #ef4444;
+  --color-red-dark: #dc2626;
+  --color-eco-bg: #0a0d14;
+  --color-eco-card: #111827;
+  --color-eco-border: #1e293b;
+}
+
+body {
+  margin: 0;
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+}
+
+* {
+  box-sizing: border-box;
+}
